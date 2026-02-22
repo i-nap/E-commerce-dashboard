@@ -4,12 +4,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FilterBarProps } from "@/types/product";
 import { SlidersHorizontalIcon, XIcon, TagIcon, StarIcon } from "lucide-react";
-
-const RATING_OPTIONS = [
-    { label: "2+", value: "2" },
-    { label: "3+", value: "3" },
-    { label: "4+", value: "4" },
-];
+import { RATING_OPTIONS } from "@/constants/filter-options";
+import Button from "./button";
+import { buildFilterParams } from "@/lib/filter-params";
 
 export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRating }: FilterBarProps) {
     const router = useRouter();
@@ -22,13 +19,7 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
     const hasActiveFilters = !!(activeMinPrice || activeMaxPrice || activeMinRating);
 
     const updateParams = (updates: Record<string, string | null>) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.delete("page");
-        for (const [key, val] of Object.entries(updates)) {
-            if (val === null || val === "") params.delete(key);
-            else params.set(key, val);
-        }
-        router.push(`?${params.toString()}`);
+        router.push(buildFilterParams(searchParams, updates));
     };
 
     const applyPriceRange = () => {
@@ -55,22 +46,20 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
 
     return (
         <div className="flex flex-col gap-3 mb-6">
-            <div className="flex flex-wrap items-center gap-3 py-3 border-y border-gray-100">
+            <div className="flex flex-wrap items-center gap-2 py-3 border-y border-gray-100">
                 <span className="flex items-center gap-1.5 text-sm font-medium text-gray-500 shrink-0">
                     <SlidersHorizontalIcon className="w-4 h-4" />
                     Filter
                 </span>
 
-                {/* Price toggle button */}
-                <button
+                <Button
+                    variant={priceOpen || activeMinPrice || activeMaxPrice ? "filter-active" : "filter"}
+                    size="sm"
                     onClick={() => setPriceOpen(o => !o)}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer
-                        ${priceOpen || activeMinPrice || activeMaxPrice
-                            ? "bg-primary text-white border-primary"
-                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}`}
+                    className="flex items-center gap-1.5"
                 >
                     <TagIcon className="w-3.5 h-3.5" />
-                    Price
+                    Price range
                     {(activeMinPrice || activeMaxPrice) && (
                         <span className="ml-1 text-xs opacity-80">
                             {activeMinPrice ? `$${activeMinPrice}` : ""}
@@ -78,46 +67,44 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
                             {activeMaxPrice ? `$${activeMaxPrice}` : ""}
                         </span>
                     )}
-                </button>
+                </Button>
 
-                <div className="w-px h-5 bg-gray-200 hidden sm:block" />
+                <div className="w-px h-5 bg-gray-200" />
 
-                {/* Rating filters */}
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400 flex items-center gap-1">
-                        <StarIcon className="w-3.5 h-3.5 fill-gray-300 text-gray-300" />
-                    </span>
+                <div className="flex flex-wrap items-center gap-2">
+                    <StarIcon className="w-3.5 h-3.5 fill-gray-300 text-gray-300 shrink-0" />
                     {RATING_OPTIONS.map((opt) => {
                         const isActive = activeMinRating === opt.value;
                         return (
-                            <button
+                            <Button
                                 key={opt.value}
+                                variant={isActive ? "filter-active" : "filter"}
+                                size="sm"
                                 onClick={() => handleRating(opt.value)}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer
-                                    ${isActive ? "bg-primary text-white border-primary" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"}`}
                             >
                                 {opt.label} ★
-                            </button>
+                            </Button>
                         );
                     })}
                 </div>
 
                 {hasActiveFilters && (
-                    <button
+                    <Button
+                        variant="filter"
+                        size="sm"
                         onClick={clearAll}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer ml-auto"
+                        className="flex items-center gap-1 ml-auto"
                     >
                         <XIcon className="w-3.5 h-3.5" />
                         Clear
-                    </button>
+                    </Button>
                 )}
             </div>
 
-            {/* Price range box */}
             {priceOpen && (
-                <div className="flex flex-wrap items-center gap-3 px-1">
-                    <span className="text-sm text-gray-500 font-medium">Price range</span>
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 px-1">
+                    <span className="text-sm text-gray-500 font-medium shrink-0">Price range</span>
+                    <div className="flex items-center gap-2 flex-wrap">
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                             <input
@@ -141,19 +128,13 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
                                 className="w-24 pl-6 pr-3 py-1.5 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-primary"
                             />
                         </div>
-                        <button
-                            onClick={applyPriceRange}
-                            className="px-4 py-1.5 rounded-full text-sm font-medium bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
-                        >
+                        <Button variant="primary" size="sm" onClick={applyPriceRange}>
                             Apply
-                        </button>
+                        </Button>
                         {(activeMinPrice || activeMaxPrice) && (
-                            <button
-                                onClick={clearPrice}
-                                className="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors cursor-pointer"
-                            >
+                            <Button variant="filter" size="sm" onClick={clearPrice}>
                                 Clear
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>

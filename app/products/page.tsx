@@ -1,6 +1,7 @@
 import ProductGrid from "@/components/product-grid";
 import SortBar from "@/components/sort-bar";
 import FilterBar from "@/components/filter-bar";
+import MobileFilterDrawer from "@/components/mobile-filter-drawer";
 import Pagination from "@/components/pagination";
 import { getAllProducts } from "@/services/api/products";
 import { ProductPageProps } from "@/types/product";
@@ -23,11 +24,28 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
     return (
         <>
             <div className="py-10">
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                {/* Header row */}
+                <div className="flex items-center justify-between gap-3 mb-4">
                     <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-                    <SortBar activeField={sortField} activeOrder={sortOrder} />
+                    {/* Desktop sort bar */}
+                    <div className="hidden md:flex">
+                        <SortBar activeField={sortField} activeOrder={sortOrder} />
+                    </div>
+                    {/* Mobile drawer trigger */}
+                    <div className="flex md:hidden">
+                        <MobileFilterDrawer
+                            activeField={sortField}
+                            activeOrder={sortOrder}
+                            activeMinPrice={minPrice}
+                            activeMaxPrice={maxPrice}
+                            activeMinRating={minRating}
+                        />
+                    </div>
                 </div>
-                <FilterBar activeMinPrice={minPrice} activeMaxPrice={maxPrice} activeMinRating={minRating} />
+                {/* Desktop filter bar */}
+                <div className="hidden md:block">
+                    <FilterBar activeMinPrice={minPrice} activeMaxPrice={maxPrice} activeMinRating={minRating} />
+                </div>
                 <ProductGrid products={products} />
                 <Pagination
                     currentPage={currentPage}
