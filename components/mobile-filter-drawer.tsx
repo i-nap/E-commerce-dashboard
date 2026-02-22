@@ -3,25 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SlidersHorizontalIcon, XIcon, TagIcon, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+import { SlidersHorizontalIcon, XIcon, TagIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from "lucide-react";
 import { SortBarProps, FilterBarProps } from "@/types/product";
 import { sortOptions } from "@/constants/sort-options";
 import { RATING_OPTIONS } from "@/constants/filter-options";
 import Button from "./button";
 import { buildFilterParams, buildSortHref, clearSortHref } from "@/lib/filter-params";
 
-type Props = SortBarProps & FilterBarProps;
+type Props = SortBarProps & FilterBarProps & { activeSearch?: string };
 
-export default function MobileFilterDrawer({ activeField, activeOrder, activeMinPrice, activeMaxPrice, activeMinRating, activeCategory, categories }: Props) {
+export default function MobileFilterDrawer({ activeField, activeOrder, activeMinPrice, activeMaxPrice, activeMinRating, activeCategory, categories, activeSearch }: Props) {
     const [open, setOpen] = useState(false);
     const [minInput, setMinInput] = useState(activeMinPrice ?? "");
     const [maxInput, setMaxInput] = useState(activeMaxPrice ?? "");
+    const [searchInput, setSearchInput] = useState(activeSearch ?? "");
     const [priceOpen, setPriceOpen] = useState(!!(activeMinPrice || activeMaxPrice));
 
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const hasActiveFilters = !!(activeField || activeMinPrice || activeMaxPrice || activeMinRating || activeCategory);
+    const hasActiveFilters = !!(activeField || activeMinPrice || activeMaxPrice || activeMinRating || activeCategory || activeSearch);
 
     const updateParams = (updates: Record<string, string | null>) => {
         router.push(buildFilterParams(searchParams, updates));
@@ -40,8 +41,9 @@ export default function MobileFilterDrawer({ activeField, activeOrder, activeMin
     const clearAll = () => {
         setMinInput("");
         setMaxInput("");
+        setSearchInput("");
         setPriceOpen(false);
-        updateParams({ minPrice: null, maxPrice: null, minRating: null, category: null, sortField: null, sortOrder: null });
+        updateParams({ minPrice: null, maxPrice: null, minRating: null, category: null, search: null, sortField: null, sortOrder: null });
         setOpen(false);
     };
 
@@ -75,7 +77,34 @@ export default function MobileFilterDrawer({ activeField, activeOrder, activeMin
                     </Button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-7">
+                <div className="flex-1 min-h-0 overflow-y-auto px-5 py-5 flex flex-col gap-7">
+
+                    <div className="flex flex-col gap-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Search</span>
+                        <div className="relative">
+                            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            <input
+                                type="text"
+                                value={searchInput}
+                                onChange={e => {
+                                    setSearchInput(e.target.value);
+                                    updateParams({ search: e.target.value || null });
+                                }}
+                                placeholder="Search products..."
+                                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:border-primary"
+                            />
+                            {searchInput && (
+                                <button
+                                    onClick={() => { setSearchInput(""); updateParams({ search: null }); }}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                    <XIcon className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <hr className="border-gray-100" />
 
                     <div className="flex flex-col gap-3">
                         <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Sort by</span>

@@ -41,7 +41,7 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
         setMinInput("");
         setMaxInput("");
         setPriceOpen(false);
-        updateParams({ minPrice: null, maxPrice: null, minRating: null, category: null });
+        updateParams({ minPrice: null, maxPrice: null, minRating: null, category: null, search: null });
     };
 
     return (
