@@ -1,18 +1,20 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ProductCardProps } from "@/types/product";
 import Button from "./button";
 import { StarIcon } from "lucide-react";
 
 export default function ProductCard({ product }: ProductCardProps) {
     return (
-        <div className="w-full max-w-85 flex flex-col gap-3 h-full cursor-pointer">
+        <div className="w-full max-w-85 flex flex-col gap-3 h-full">
 
+            <Link href={`/products/${product.id}`} className="flex flex-col gap-3 flex-1 group">
             <div className="relative w-full aspect-square bg-[#f4f4f5] rounded-3xl flex items-center justify-center p-8 overflow-hidden">
                 <span className="absolute z-10 top-4 right-4 bg-white border border-gray-200 text-gray-700 text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm">
                     {product.category}
                 </span>
 
-                <div className="relative w-full h-full transition-transform duration-300 ease-in-out hover:scale-110">
+                <div className="relative w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-110">
                     <Image
                         src={product.image}
                         alt={product.title}
@@ -23,7 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             <div className="flex flex-col flex-1 px-1">
-                <h2 className="text-md md:text-l;g font-bold text-gray-900 line-clamp-1">
+                <h2 className="text-md md:text-lg font-bold text-gray-900 line-clamp-1 group-hover:text-primary/70 transition-colors">
                     {product.title}
                 </h2>
 
@@ -38,6 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </span>
                 </div>
             </div>
+            </Link>
 
             <div className="flex items-center gap-3 px-1">
                 <Button size="md" className="flex-1">

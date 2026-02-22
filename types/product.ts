@@ -25,7 +25,7 @@ export interface ProductGridProps {
 }
 
 export interface ProductPageProps {
-  searchParams: Promise<{ sortField?: SortField; sortOrder?: SortOrder; page?: string }>;
+  searchParams: Promise<{ sortField?: SortField; sortOrder?: SortOrder; page?: string; minPrice?: string; maxPrice?: string; minRating?: string }>;
 }
 
 export interface SortOption {
@@ -39,8 +39,18 @@ export interface SortBarProps {
   activeOrder?: SortOrder;
 }
 
+export interface ProductDetailPageProps {
+  params: Promise<{ id: string }>;
+}
+
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   searchParams: Record<string, string | undefined>;
+}
+
+export interface FilterBarProps {
+  activeMinPrice?: string;
+  activeMaxPrice?: string;
+  activeMinRating?: string;
 }
