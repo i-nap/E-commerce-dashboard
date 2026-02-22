@@ -5,7 +5,7 @@ import { StarIcon } from "lucide-react";
 
 export default function ProductCard({ product }: ProductCardProps) {
     return (
-        <div className="w-full max-w-85 flex flex-col gap-3 h-full">
+        <div className="w-full max-w-85 flex flex-col gap-3 h-full cursor-pointer">
 
             <div className="relative w-full aspect-square bg-[#f4f4f5] rounded-3xl flex items-center justify-center p-8 overflow-hidden">
                 <span className="absolute z-10 top-4 right-4 bg-white border border-gray-200 text-gray-700 text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm">

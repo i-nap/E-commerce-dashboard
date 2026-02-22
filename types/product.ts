@@ -25,7 +25,7 @@ export interface ProductGridProps {
 }
 
 export interface ProductPageProps {
-  searchParams: Promise<{ sortField?: SortField; sortOrder?: SortOrder }>;
+  searchParams: Promise<{ sortField?: SortField; sortOrder?: SortOrder; page?: string }>;
 }
 
 export interface SortOption {
@@ -37,4 +37,10 @@ export interface SortOption {
 export interface SortBarProps {
   activeField?: SortField;
   activeOrder?: SortOrder;
+}
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  searchParams: Record<string, string | undefined>;
 }
