@@ -13,10 +13,28 @@ export interface Product {
   rating: ProductRating;
 }
 
+export type SortOrder = "asc" | "desc";
+export type SortField = "price" | "title" | "rating" | "id";
+
 export interface ProductCardProps {
   product: Product;
 }
 
 export interface ProductGridProps {
   products: Product[];
+}
+
+export interface ProductPageProps {
+  searchParams: Promise<{ sortField?: SortField; sortOrder?: SortOrder }>;
+}
+
+export interface SortOption {
+  label: string;
+  field: SortField;
+  order: SortOrder;
+}
+
+export interface SortBarProps {
+  activeField?: SortField;
+  activeOrder?: SortOrder;
 }
