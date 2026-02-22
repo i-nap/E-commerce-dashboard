@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ProductCardProps } from "@/types/product";
+import Button from "./button";
 
 export default function ProductCard({ product }: ProductCardProps) {
     return (
@@ -40,18 +41,15 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </div>
 
                     <span className="text-2xl font-bold text-gray-900">
-                        {product.price}
+                        ${product.price}
                     </span>
                 </div>
             </div>
 
             <div className="flex items-center gap-3 px-1 mt-2">
-                <button className="flex-1 bg-white border border-gray-200 text-gray-900 font-bold py-3 px-4 rounded-full text-sm hover:bg-gray-50 transition-colors">
+                <Button size="md" className="flex-1">
                     Add to Cart
-                </button>
-                <button className="flex-1 bg-[#1a1a1a] text-white font-bold py-3 px-4 rounded-full text-sm hover:bg-black transition-colors">
-                    Buy Now
-                </button>
+                </Button>
             </div>
 
         </div>

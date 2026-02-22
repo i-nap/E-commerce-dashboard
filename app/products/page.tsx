@@ -6,7 +6,10 @@ export default async function ProductPage() {
 
     return (
         <>
-            <ProductGrid products={products} />
+            <div className="py-10">
+
+                <ProductGrid products={products} />
+            </div>
         </>
     )
 }
