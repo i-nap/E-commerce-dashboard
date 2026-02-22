@@ -1,18 +1,18 @@
 import { ButtonProps } from "@/types/button";
 
 const styles = {
-  base: "inline-flex items-center justify-center rounded-md font-medium transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+  base: "inline-flex items-center justify-center rounded-full font-medium transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
   variant: {
-    primary:   "bg-blue-600 text-white hover:bg-blue-700",
-    secondary: "bg-gray-600 text-white hover:bg-gray-700",
-    danger:    "bg-red-600 text-white hover:bg-red-700",
-    ghost:     "bg-transparent text-gray-700 hover:bg-gray-100",
-    outline:   "border border-gray-400 text-gray-700 hover:bg-gray-50",
+    primary:   "bg-primary text-white hover:bg-primary/80",
+    secondary: "bg-secondary text-white hover:bg-secondary/80",
+    danger:    "bg-danger text-white hover:bg-danger/80",
+    ghost:     "bg-transparent text-foreground hover:bg-muted",
+    outline:   "border border-secondary text-foreground bg-transparent hover:bg-muted",
   },
   size: {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
-    lg: "px-6 py-3 text-lg",
+    sm: "px-5 py-2 text-sm",
+    md: "px-7 py-3 text-base",
+    lg: "px-9 py-4 text-lg",
   },
 };
 
