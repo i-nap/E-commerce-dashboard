@@ -57,6 +57,25 @@ export interface FilterBarProps {
   categories: string[];
 }
 
+export interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  category: string;
+  quantity: number;
+}
+
+export interface CartContextType {
+  items: CartItem[];
+  addItem: (product: Product, quantity?: number) => void;
+  removeItem: (id: number) => void;
+  updateQuantity: (id: number, quantity: number) => void;
+  clearCart: () => void;
+  total: number;
+  itemCount: number;
+}
+
 export interface SearchBarProps {
   activeSearch?: string;
 }

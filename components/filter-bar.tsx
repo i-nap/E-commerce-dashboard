@@ -46,7 +46,7 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
 
     return (
         <div className="flex flex-col gap-3 mb-6">
-            <div className="flex flex-wrap items-center gap-2 py-3 border-y border-gray-100">
+            <div className="flex flex-wrap items-center gap-2 py-3 border-b border-gray-100">
                 <span className="flex items-center gap-1.5 text-sm font-medium text-gray-500 shrink-0">
                     <SlidersHorizontalIcon className="w-4 h-4" />
                     Filter

@@ -1,10 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ProductCardProps } from "@/types/product";
+import { useAddToCart } from "@/hooks/use-add-to-cart";
 import Button from "./button";
-import { StarIcon } from "lucide-react";
+import { StarIcon, CheckIcon } from "lucide-react";
 
 export default function ProductCard({ product }: ProductCardProps) {
+    const { handleAdd, added } = useAddToCart();
+
     return (
         <div className="w-full max-w-85 flex flex-col gap-3 h-full">
 
@@ -43,8 +48,14 @@ export default function ProductCard({ product }: ProductCardProps) {
             </Link>
 
             <div className="flex items-center gap-3 px-1">
-                <Button size="md" className="flex-1">
-                    Add to Cart
+                <Button size="md" className="flex-1" onClick={() => handleAdd(product)}>
+                    {added ? (
+                        <span className="inline-flex items-center gap-1.5">
+                            <CheckIcon className="w-4 h-4" /> Added
+                        </span>
+                    ) : (
+                        "Add to Cart"
+                    )}
                 </Button>
             </div>
 

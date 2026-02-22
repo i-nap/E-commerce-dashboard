@@ -1,11 +1,18 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { ProductCardProps } from "@/types/product";
+import { useAddToCart } from "@/hooks/use-add-to-cart";
 import Button from "./button";
-import { StarIcon, ArrowLeftIcon } from "lucide-react";
+import { StarIcon, ArrowLeftIcon, MinusIcon, PlusIcon, CheckIcon } from "lucide-react";
 
 export default function ProductDetail({ product }: ProductCardProps) {
-    return (
+  const [quantity, setQuantity] = useState(1);
+  const { handleAdd, added } = useAddToCart(quantity);
+
+  return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <Link
                 href="/products"
@@ -59,11 +66,42 @@ export default function ProductDetail({ product }: ProductCardProps) {
                     <div className="flex flex-col">
                         <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Price</span>
                         <span className="text-3xl md:text-4xl font-black text-gray-900">
-                            ${product.price}
+                            ${product.price.toFixed(2)}
                         </span>
                     </div>
-                    <Button size="lg" className="w-full">
-                        Add to Cart
+
+                    <div className="flex items-center gap-3">
+                        <span className="text-sm font-semibold text-gray-700">Qty</span>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                            <button
+                                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                                className="flex items-center justify-center w-9 h-9 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-40"
+                                disabled={quantity <= 1}
+                                aria-label="Decrease quantity"
+                            >
+                                <MinusIcon className="w-4 h-4" />
+                            </button>
+                            <span className="w-10 text-center text-sm font-bold text-gray-900 select-none">
+                                {quantity}
+                            </span>
+                            <button
+                                onClick={() => setQuantity((q) => q + 1)}
+                                className="flex items-center justify-center w-9 h-9 text-gray-600 hover:bg-gray-100 transition-colors"
+                                aria-label="Increase quantity"
+                            >
+                                <PlusIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+
+                    <Button size="lg" className="w-full" onClick={() => handleAdd(product)}>
+                        {added ? (
+                            <span className="inline-flex items-center gap-2">
+                                <CheckIcon className="w-4 h-4" /> Added to Cart
+                            </span>
+                        ) : (
+                            "Add to Cart"
+                        )}
                     </Button>
                 </div>
 

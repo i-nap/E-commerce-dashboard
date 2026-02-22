@@ -56,7 +56,6 @@ export default function MobileFilterDrawer({ activeField, activeOrder, activeMin
                 className="flex items-center gap-2 relative"
             >
                 <SlidersHorizontalIcon className="w-4 h-4" />
-                Filters & Sort
                 {hasActiveFilters && (
                     <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-primary" />
                 )}

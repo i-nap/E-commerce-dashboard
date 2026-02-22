@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
+import { CartProvider } from "@/context/cart-context";
+import CartButton from "@/components/cart-button";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,9 +30,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          {children}
-        </main>
+        <CartProvider>
+          <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/90 backdrop-blur-sm">
+            <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+              <Link href="/products" className="text-lg font-bold tracking-tight text-gray-900">
+                Nest
+              </Link>
+              <CartButton />
+            </div>
+          </header>
+          <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+            {children}
+          </main>
+        </CartProvider>
       </body>
     </html>
   );
