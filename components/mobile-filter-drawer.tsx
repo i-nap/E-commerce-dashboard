@@ -12,7 +12,7 @@ import { buildFilterParams, buildSortHref, clearSortHref } from "@/lib/filter-pa
 
 type Props = SortBarProps & FilterBarProps;
 
-export default function MobileFilterDrawer({ activeField, activeOrder, activeMinPrice, activeMaxPrice, activeMinRating }: Props) {
+export default function MobileFilterDrawer({ activeField, activeOrder, activeMinPrice, activeMaxPrice, activeMinRating, activeCategory, categories }: Props) {
     const [open, setOpen] = useState(false);
     const [minInput, setMinInput] = useState(activeMinPrice ?? "");
     const [maxInput, setMaxInput] = useState(activeMaxPrice ?? "");
@@ -21,7 +21,7 @@ export default function MobileFilterDrawer({ activeField, activeOrder, activeMin
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const hasActiveFilters = !!(activeField || activeMinPrice || activeMaxPrice || activeMinRating);
+    const hasActiveFilters = !!(activeField || activeMinPrice || activeMaxPrice || activeMinRating || activeCategory);
 
     const updateParams = (updates: Record<string, string | null>) => {
         router.push(buildFilterParams(searchParams, updates));
@@ -41,7 +41,7 @@ export default function MobileFilterDrawer({ activeField, activeOrder, activeMin
         setMinInput("");
         setMaxInput("");
         setPriceOpen(false);
-        updateParams({ minPrice: null, maxPrice: null, minRating: null, sortField: null, sortOrder: null });
+        updateParams({ minPrice: null, maxPrice: null, minRating: null, category: null, sortField: null, sortOrder: null });
         setOpen(false);
     };
 
@@ -183,6 +183,28 @@ export default function MobileFilterDrawer({ activeField, activeOrder, activeMin
                                         className="w-full justify-between"
                                     >
                                         {opt.label} ★
+                                    </Button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <hr className="border-gray-100" />
+
+                    <div className="flex flex-col gap-3">
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Category</span>
+                        <div className="flex flex-col gap-2">
+                            {categories.map((cat) => {
+                                const isActive = activeCategory === cat;
+                                return (
+                                    <Button
+                                        key={cat}
+                                        variant={isActive ? "filter-active" : "filter"}
+                                        size="sm"
+                                        onClick={() => { updateParams({ category: isActive ? null : cat }); setOpen(false); }}
+                                        className="w-full justify-start capitalize"
+                                    >
+                                        {cat}
                                     </Button>
                                 );
                             })}

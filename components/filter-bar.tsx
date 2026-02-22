@@ -8,7 +8,7 @@ import { RATING_OPTIONS } from "@/constants/filter-options";
 import Button from "./button";
 import { buildFilterParams } from "@/lib/filter-params";
 
-export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRating }: FilterBarProps) {
+export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRating, activeCategory, categories }: FilterBarProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -16,7 +16,7 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
     const [maxInput, setMaxInput] = useState(activeMaxPrice ?? "");
     const [priceOpen, setPriceOpen] = useState(!!(activeMinPrice || activeMaxPrice));
 
-    const hasActiveFilters = !!(activeMinPrice || activeMaxPrice || activeMinRating);
+    const hasActiveFilters = !!(activeMinPrice || activeMaxPrice || activeMinRating || activeCategory);
 
     const updateParams = (updates: Record<string, string | null>) => {
         router.push(buildFilterParams(searchParams, updates));
@@ -41,7 +41,7 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
         setMinInput("");
         setMaxInput("");
         setPriceOpen(false);
-        updateParams({ minPrice: null, maxPrice: null, minRating: null });
+        updateParams({ minPrice: null, maxPrice: null, minRating: null, category: null });
     };
 
     return (
@@ -83,6 +83,25 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
                                 onClick={() => handleRating(opt.value)}
                             >
                                 {opt.label} ★
+                            </Button>
+                        );
+                    })}
+                </div>
+
+                <div className="w-px h-5 bg-gray-200" />
+
+                <div className="flex flex-wrap items-center gap-2">
+                    {categories.map((cat) => {
+                        const isActive = activeCategory === cat;
+                        return (
+                            <Button
+                                key={cat}
+                                variant={isActive ? "filter-active" : "filter"}
+                                size="sm"
+                                onClick={() => updateParams({ category: isActive ? null : cat })}
+                                className="capitalize"
+                            >
+                                {cat}
                             </Button>
                         );
                     })}

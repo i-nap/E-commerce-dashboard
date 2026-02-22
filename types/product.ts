@@ -25,7 +25,7 @@ export interface ProductGridProps {
 }
 
 export interface ProductPageProps {
-  searchParams: Promise<{ sortField?: SortField; sortOrder?: SortOrder; page?: string; minPrice?: string; maxPrice?: string; minRating?: string }>;
+  searchParams: Promise<{ sortField?: SortField; sortOrder?: SortOrder; page?: string; minPrice?: string; maxPrice?: string; minRating?: string; category?: string }>;
 }
 
 export interface SortOption {
@@ -53,4 +53,6 @@ export interface FilterBarProps {
   activeMinPrice?: string;
   activeMaxPrice?: string;
   activeMinRating?: string;
+  activeCategory?: string;
+  categories: string[];
 }
