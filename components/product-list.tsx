@@ -96,12 +96,23 @@ export default function ProductList({ allProducts, categories }: ProductListProp
                 />
             </div>
 
-            <ProductGrid products={products} />
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                searchParams={searchParamsRecord}
-            />
+            {filtered.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-24 text-center text-gray-500 gap-4">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-1">No products found</h2>
+                        <p className="text-gray-500">Try adjusting your filters or search terms.</p>
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <ProductGrid products={products} />
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        searchParams={searchParamsRecord}
+                    />
+                </>
+            )}
         </div>
     );
 }

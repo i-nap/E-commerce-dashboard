@@ -4,8 +4,17 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { getPageNumbers } from "@/lib/pagination";
 
 export default function Pagination({ currentPage, totalPages, searchParams }: PaginationProps) {
-    const buildHref = (page: number) => {
-        const params = new URLSearchParams({ ...searchParams, page: String(page) } as Record<string, string>);
+    const buildHref = (page: number | string) => {
+        const params = new URLSearchParams();
+
+        if (searchParams) {
+            Object.entries(searchParams).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== "" && value !== "undefined") {
+                    params.set(key, String(value));
+                }
+            });
+        }
+        params.set("page", String(page));
         return `?${params.toString()}`;
     };
 
