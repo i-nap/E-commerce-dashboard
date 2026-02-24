@@ -2,7 +2,7 @@ import { Product } from "@/types/product";
 import { fetchWrapper } from "@/lib/fetchWrapper";
 
 export const getAllProducts = async (): Promise<Product[]> => {
-  return fetchWrapper<Product[]>("/products", { cache: "no-store" });
+  return fetchWrapper<Product[]>("/products", { });
 };
 
 export const getCategories = async (): Promise<string[]> => {
