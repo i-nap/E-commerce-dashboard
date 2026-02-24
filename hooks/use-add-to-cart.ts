@@ -5,13 +5,15 @@ import { useCart } from "@/context/cart-context";
 export function useAddToCart(defaultQuantity = 1) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleAdd = (product: Product, quantity?: number) => {
+  const handleAdd = async (product: Product, quantity?: number) => {
     const finalQuantity = quantity ?? defaultQuantity;
 
     setError(null);
     setAdded(false);
+    setIsLoading(true);
 
     try {
       if (!product || !product.id) {
@@ -30,12 +32,12 @@ export function useAddToCart(defaultQuantity = 1) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to add item to cart.";
       setError(errorMessage);
-
       console.error("Cart Hook Error:", err);
-
       setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return { handleAdd, added, error };
+  return { handleAdd, added, error, isLoading };
 }
