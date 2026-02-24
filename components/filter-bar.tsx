@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FilterBarProps } from "@/types/product";
-import { SlidersHorizontalIcon, XIcon, TagIcon, StarIcon } from "lucide-react";
+import { SlidersHorizontalIcon, XIcon, TagIcon, StarIcon, ChevronDownIcon, LayoutGridIcon } from "lucide-react";
 import { RATING_OPTIONS } from "@/constants/filter-options";
 import Button from "./button";
 import { buildFilterParams } from "@/lib/filter-params";
@@ -14,7 +14,20 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
 
     const [minInput, setMinInput] = useState(activeMinPrice ?? "");
     const [maxInput, setMaxInput] = useState(activeMaxPrice ?? "");
-    const [priceOpen, setPriceOpen] = useState(!!(activeMinPrice || activeMaxPrice));
+    const [priceOpen, setPriceOpen] = useState(false);
+    const [categoryOpen, setCategoryOpen] = useState(false);
+
+    const categoryRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (categoryRef.current && !categoryRef.current.contains(event.target as Node)) {
+                setCategoryOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const hasActiveFilters = !!(activeMinPrice || activeMaxPrice || activeMinRating || activeCategory);
 
@@ -24,87 +37,95 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
 
     const applyPriceRange = () => {
         updateParams({ minPrice: minInput || null, maxPrice: maxInput || null });
-    };
-
-    const clearPrice = () => {
-        setMinInput("");
-        setMaxInput("");
         setPriceOpen(false);
-        updateParams({ minPrice: null, maxPrice: null });
-    };
-
-    const handleRating = (value: string) => {
-        updateParams({ minRating: activeMinRating === value ? null : value });
     };
 
     const clearAll = () => {
         setMinInput("");
         setMaxInput("");
         setPriceOpen(false);
+        setCategoryOpen(false);
         updateParams({ minPrice: null, maxPrice: null, minRating: null, category: null, search: null });
     };
 
     return (
         <div className="flex flex-col gap-3 mb-6">
-            <div className="flex flex-wrap items-center gap-2 py-3 border-b border-gray-100">
-                <span className="flex items-center gap-1.5 text-sm font-medium text-gray-500 shrink-0">
+            <div className="flex flex-wrap items-center gap-2 py-3 border-b border-gray-100 relative">
+                <span className="flex items-center gap-1.5 text-sm font-medium text-gray-500 shrink-0 mr-2">
                     <SlidersHorizontalIcon className="w-4 h-4" />
                     Filter
                 </span>
 
                 <Button
-                    variant={priceOpen || activeMinPrice || activeMaxPrice ? "filter-active" : "filter"}
+                    variant={activeMinPrice || activeMaxPrice ? "filter-active" : "filter"}
                     size="sm"
-                    onClick={() => setPriceOpen(o => !o)}
+                    onClick={() => {
+                        setPriceOpen(!priceOpen);
+                        setCategoryOpen(false);
+                    }}
                     className="flex items-center gap-1.5"
                 >
                     <TagIcon className="w-3.5 h-3.5" />
-                    Price range
-                    {(activeMinPrice || activeMaxPrice) && (
-                        <span className="ml-1 text-xs opacity-80">
-                            {activeMinPrice ? `$${activeMinPrice}` : ""}
-                            {activeMinPrice && activeMaxPrice ? " – " : ""}
-                            {activeMaxPrice ? `$${activeMaxPrice}` : ""}
-                        </span>
-                    )}
+                    Price
+                    <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${priceOpen ? 'rotate-180' : ''}`} />
                 </Button>
 
-                <div className="w-px h-5 bg-gray-200" />
+                <div className="relative" ref={categoryRef}>
+                    <Button
+                        variant={activeCategory ? "filter-active" : "filter"}
+                        size="sm"
+                        onClick={() => {
+                            setCategoryOpen(!categoryOpen);
+                            setPriceOpen(false);
+                        }}
+                        className="flex items-center gap-1.5"
+                    >
+                        <LayoutGridIcon className="w-3.5 h-3.5" />
+                        {activeCategory ? <span className="capitalize">{activeCategory}</span> : "Category"}
+                        <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${categoryOpen ? 'rotate-180' : ''}`} />
+                    </Button>
 
-                <div className="flex flex-wrap items-center gap-2">
-                    <StarIcon className="w-3.5 h-3.5 fill-gray-300 text-gray-300 shrink-0" />
-                    {RATING_OPTIONS.map((opt) => {
-                        const isActive = activeMinRating === opt.value;
-                        return (
-                            <Button
-                                key={opt.value}
-                                variant={isActive ? "filter-active" : "filter"}
-                                size="sm"
-                                onClick={() => handleRating(opt.value)}
+                    {categoryOpen && (
+                        <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 py-2 animate-in fade-in zoom-in-95 duration-100">
+                            <button
+                                onClick={() => {
+                                    updateParams({ category: null });
+                                    setCategoryOpen(false);
+                                }}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${!activeCategory ? 'font-bold text-primary' : 'text-gray-700'}`}
                             >
-                                {opt.label} ★
-                            </Button>
-                        );
-                    })}
+                                All Categories
+                            </button>
+                            <div className="h-px bg-gray-100 my-1" />
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat}
+                                    onClick={() => {
+                                        updateParams({ category: cat });
+                                        setCategoryOpen(false);
+                                    }}
+                                    className={`w-full text-left px-4 py-2 text-sm capitalize hover:bg-gray-50 transition-colors ${activeCategory === cat ? 'font-bold text-primary' : 'text-gray-700'}`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                <div className="w-px h-5 bg-gray-200" />
+                <div className="w-px h-5 bg-gray-200 mx-1" />
 
                 <div className="flex flex-wrap items-center gap-2">
-                    {categories.map((cat) => {
-                        const isActive = activeCategory === cat;
-                        return (
-                            <Button
-                                key={cat}
-                                variant={isActive ? "filter-active" : "filter"}
-                                size="sm"
-                                onClick={() => updateParams({ category: isActive ? null : cat })}
-                                className="capitalize"
-                            >
-                                {cat}
-                            </Button>
-                        );
-                    })}
+                    {RATING_OPTIONS.map((opt) => (
+                        <Button
+                            key={opt.value}
+                            variant={activeMinRating === opt.value ? "filter-active" : "filter"}
+                            size="sm"
+                            onClick={() => updateParams({ minRating: activeMinRating === opt.value ? null : opt.value })}
+                        >
+                            {opt.label} ★
+                        </Button>
+                    ))}
                 </div>
 
                 {hasActiveFilters && (
@@ -112,49 +133,42 @@ export default function FilterBar({ activeMinPrice, activeMaxPrice, activeMinRat
                         variant="filter"
                         size="sm"
                         onClick={clearAll}
-                        className="flex items-center gap-1 ml-auto"
+                        className="flex items-center gap-1 ml-auto text-red-500 hover:text-red-600"
                     >
                         <XIcon className="w-3.5 h-3.5" />
-                        Clear
+                        Clear All
                     </Button>
                 )}
             </div>
 
             {priceOpen && (
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 px-1">
-                    <span className="text-sm text-gray-500 font-medium shrink-0">Price range</span>
-                    <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 animate-in slide-in-from-top-2 duration-200">
+                    <span className="text-sm font-bold text-gray-700">Set Price Range</span>
+                    <div className="flex items-center gap-2">
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                             <input
                                 type="number"
-                                min={0}
                                 placeholder="Min"
                                 value={minInput}
                                 onChange={e => setMinInput(e.target.value)}
-                                className="w-24 pl-6 pr-3 py-1.5 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-primary"
+                                className="w-24 pl-7 pr-3 py-1.5 text-sm border border-gray-300 rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                             />
                         </div>
-                        <span className="text-gray-400">–</span>
+                        <span className="text-gray-400">—</span>
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                             <input
                                 type="number"
-                                min={0}
                                 placeholder="Max"
                                 value={maxInput}
                                 onChange={e => setMaxInput(e.target.value)}
-                                className="w-24 pl-6 pr-3 py-1.5 text-sm border border-gray-300 rounded-full focus:outline-none focus:border-primary"
+                                className="w-24 pl-7 pr-3 py-1.5 text-sm border border-gray-300 rounded-full focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                             />
                         </div>
-                        <Button variant="primary" size="sm" onClick={applyPriceRange}>
+                        <Button variant="primary" size="sm" onClick={applyPriceRange} className="ml-2">
                             Apply
                         </Button>
-                        {(activeMinPrice || activeMaxPrice) && (
-                            <Button variant="filter" size="sm" onClick={clearPrice}>
-                                Clear
-                            </Button>
-                        )}
                     </div>
                 </div>
             )}
