@@ -2,19 +2,61 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBagIcon, ArrowLeftIcon, Trash2Icon, CheckCircleIcon } from "lucide-react";
+import { ShoppingBagIcon, ArrowLeftIcon, Trash2Icon, CheckCircleIcon, UserIcon, Loader2 } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useAuth } from "@/hooks/use-auth";
 import CartItem from "@/components/cart-item";
 import Button from "@/components/button";
 
 export default function CartPage() {
     const { items, total, itemCount, clearCart } = useCart();
+    const { isLoggedIn } = useAuth();
     const [checkedOut, setCheckedOut] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
-    const checkoutButton = () => {
-        clearCart();
-        setCheckedOut(true);
+    const checkoutButton = async () => {
+        if (!isLoggedIn || isPending) return;
+
+        setIsPending(true);
+
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+            
+            clearCart();
+            setCheckedOut(true);
+        } catch (error) {
+            console.error("Checkout failed:", error);
+        } finally {
+            setIsPending(false);
+        }
     };
+
+    if (!isLoggedIn) {
+        return (
+            <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
+                <div className="flex items-center justify-center w-20 h-20 rounded-full bg-blue-50">
+                    <UserIcon className="w-10 h-10 text-blue-500" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Please login to use your cart</h1>
+                    <p className="mt-2 text-gray-500 text-sm max-w-xs mx-auto">
+                        To protect your items and provide a secure checkout, you need to be signed in to your account.
+                    </p>
+                </div>
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                    <Link href="/login">
+                        <Button size="lg" className="w-full">
+                            Login to Account
+                        </Button>
+                    </Link>
+                    <Link href="/products" className="text-sm font-medium text-gray-500 hover:text-gray-900">
+                        Continue as Guest
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
     if (checkedOut) {
         return (
             <div className="flex flex-col items-center justify-center gap-5 py-24 text-center">
@@ -80,7 +122,8 @@ export default function CartPage() {
 
                 <button
                     onClick={clearCart}
-                    className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-red-500 transition-colors"
+                    disabled={isPending}
+                    className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Clear cart"
                 >
                     <Trash2Icon className="w-4 h-4" />
@@ -121,8 +164,20 @@ export default function CartPage() {
                         <span>${total.toFixed(2)}</span>
                     </div>
 
-                    <Button onClick={checkoutButton} size="lg" className="w-full">
-                        Checkout
+                    <Button 
+                        onClick={checkoutButton} 
+                        size="lg" 
+                        className="w-full flex items-center justify-center gap-2"
+                        disabled={isPending}
+                    >
+                        {isPending ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Processing...
+                            </>
+                        ) : (
+                            "Checkout"
+                        )}
                     </Button>
 
                     <p className="mt-3 text-center text-xs text-gray-400">

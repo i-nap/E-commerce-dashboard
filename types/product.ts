@@ -43,6 +43,11 @@ export interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+export interface ProductListProps {
+    allProducts: Product[];
+    categories: string[];
+}
+
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -65,6 +70,7 @@ export interface CartItem {
   category: string;
   quantity: number;
 }
+
 
 export interface CartContextType {
   items: CartItem[];

@@ -1,6 +1,11 @@
-import { getAllProducts } from "@/services/api/products";
+'use client'
+import { useEffect } from "react";
 
-export default async function Home() {
+export default function Home() {
+
+  useEffect (() => {
+    window.location.href = "/products";
+  }, []);
 
   return (
     <>

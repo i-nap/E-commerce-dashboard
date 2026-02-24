@@ -9,9 +9,8 @@ export async function fetchWrapper<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const baseUrl = process.env.SERVER_URL || "https://fakestoreapi.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
   const url = `${baseUrl}${endpoint}`;
-
   try {
     const response = await fetch(url, {
       ...options,
@@ -29,6 +28,12 @@ export async function fetchWrapper<T>(
         throw new ApiError(
           "The store is having technical trouble. Please try again later.",
           500,
+        );
+      }
+      if (response.status === 401) {
+        throw new ApiError(
+          "Username or password is incorrect. Please try again.",
+          response.status,
         );
       }
       throw new ApiError(

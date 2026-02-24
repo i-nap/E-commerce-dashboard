@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { Product, SortField, SortOrder } from "@/types/product";
+import { ProductListProps, SortField, SortOrder } from "@/types/product";
 import { PER_PAGE } from "@/constants/pagination";
 import { sortOptions } from "@/constants/sort-options";
 import ProductGrid from "@/components/product-grid";
@@ -12,10 +12,6 @@ import MobileFilterDrawer from "@/components/mobile-filter-drawer";
 import Pagination from "@/components/pagination";
 import SearchBar from "@/components/search-bar";
 
-interface ProductListProps {
-    allProducts: Product[];
-    categories: string[];
-}
 
 export default function ProductList({ allProducts, categories }: ProductListProps) {
     const searchParams = useSearchParams();

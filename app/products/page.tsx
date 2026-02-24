@@ -7,5 +7,6 @@ export default async function ProductPage() {
         getCategories(),
     ]);
 
+
     return <ProductList allProducts={allProducts} categories={categories} />;
 }

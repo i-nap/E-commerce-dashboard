@@ -2,14 +2,12 @@
 
 import Image from "next/image";
 import { Trash2Icon, MinusIcon, PlusIcon } from "lucide-react";
-import { CartItem as CartItemType } from "@/types/product";
 import { useCart } from "@/context/cart-context";
+import { CartItemProps } from "@/types/cart";
 
-interface Props {
-    item: CartItemType;
-}
 
-export default function CartItem({ item }: Props) {
+
+export default function CartItem({ item }: CartItemProps) {
     const { updateQuantity, removeItem } = useCart();
 
     return (
