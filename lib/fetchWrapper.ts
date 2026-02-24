@@ -5,12 +5,11 @@ export class ApiError extends Error {
     this.status = status;
   }
 }
-
 export async function fetchWrapper<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const baseUrl = process.env.SERVER_URL;
+  const baseUrl = process.env.SERVER_URL || "https://fakestoreapi.com";
   const url = `${baseUrl}${endpoint}`;
 
   try {
@@ -24,17 +23,42 @@ export async function fetchWrapper<T>(
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.error(`Product or category not found at: ${url}`);
-      } else {
-        console.error(`API Error: ${response.status}`);
+        throw new ApiError("The item you are looking for doesn't exist.", 404);
       }
-
-      throw new ApiError("Failed to fetch from API", response.status);
+      if (response.status >= 500) {
+        throw new ApiError(
+          "The store is having technical trouble. Please try again later.",
+          500,
+        );
+      }
+      throw new ApiError(
+        "Something went wrong with the request.",
+        response.status,
+      );
     }
 
-    return (await response.json()) as T;
+    const text = await response.text();
+
+    if (!text) {
+      throw new ApiError("No data was found.", 204);
+    }
+
+    try {
+      return JSON.parse(text) as T;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (parseError) {
+      throw new ApiError(
+        "We received a broken response. Please refresh and try again.",
+        500,
+      );
+    }
   } catch (error) {
+    if (error instanceof ApiError) throw error;
+
     console.error("Fetch Wrapper Error:", error);
-    throw error;
+    throw new ApiError(
+      "Unable to connect to the store. Please check your internet.",
+      503,
+    );
   }
 }

@@ -22,7 +22,7 @@ export default function Error({
       </p>
       <Button
         onClick={() => reset()}
-        variant='danger'      >
+        variant='danger'>
         Try again
       </Button>
     </div>
