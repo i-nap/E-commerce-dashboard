@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     canonical: '/products',
   },
 };
-
+export const dynamic = "force-dynamic";
 export default async function ProductPage() {
     const [allProducts, categories] = await Promise.all([
         getAllProducts(),

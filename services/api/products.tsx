@@ -3,7 +3,7 @@ import { fetchWrapper } from "@/lib/fetchWrapper";
 
 export const getAllProducts = async (): Promise<Product[]> => {
   return fetchWrapper<Product[]>("/products", {
-    next: { revalidate: 3600 }
+    cache: "no-store"
   });
 };
 
